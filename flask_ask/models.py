@@ -6,6 +6,7 @@ from .core import session, context, current_stream, stream_cache
 from .cache import push_stream
 from . import logger
 import uuid
+from abc import ABC, abstractmethod
 
 from pprint import pprint
 
@@ -108,6 +109,52 @@ class _Response(object):
 
         return json.dumps(response_wrapper, **kw)
 
+class dialog_type(ABC):
+    @abstractmethod
+    def directives(self):
+        pass
+
+    @abstractmethod
+    def output_speech(self):
+        pass
+
+class delegate(dialog_type):
+    def __init__(self):
+        pass
+
+    def directives(self):
+        return [{
+            'type': 'Dialog.Delegate'
+        }]
+
+    def output_speech(self):
+        return None
+
+class elicit(dialog_type):
+    def __init__(self, slot_to_elicit, output_speech):
+        self.slot = slot_to_elicit
+        self.speech = output_speech
+
+    def directives(self):
+        return [{
+            'type': 'Dialog.ElicitSlot',
+            'slotToElicit': self.slot
+        }]
+
+    def output_speech(self):
+        return {
+            'type': 'PlainText',
+            'text': self.speech
+        }
+ 
+class dialog(_Response):
+    def __init__(self, dialog_type):
+        self._response = {
+            #'shouldEndSession': False,
+            'directives': dialog_type.directives(),
+        }
+        if dialog_type.output_speech() != None:
+            self._response['outputSpeech'] = dialog_type.output_speech() 
 
 class statement(_Response):
 
