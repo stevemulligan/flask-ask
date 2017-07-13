@@ -146,11 +146,42 @@ class elicit(dialog_type):
             'type': 'PlainText',
             'text': self.speech
         }
- 
+
+class confirm_slot(dialog_type):
+    def __init__(self, slot_to_confirm, output_speech):
+        self.slot = slot_to_confirm
+        self.speech = output_speech
+
+    def directives(self):
+        return [{
+            'type': 'Dialog.ConfirmSlot',
+            'slotToConfirm': self.slot
+        }]
+
+    def output_speech(self):
+        return {
+            'type': 'PlainText',
+            'text': self.speech
+        }
+
+class confirm_intent(dialog_type):
+    def __init__(self, output_speech):
+        self.speech = output_speech
+    
+    def directives(self):
+        return [{
+            'type': 'Dialog.ConfirmIntent'
+        }] 
+
+    def output_speech(self):
+        return {
+            'type': 'PlainText',
+            'text': self.speech
+        }
+
 class dialog(_Response):
     def __init__(self, dialog_type):
         self._response = {
-            #'shouldEndSession': False,
             'directives': dialog_type.directives(),
         }
         if dialog_type.output_speech() != None:
