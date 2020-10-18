@@ -5,7 +5,7 @@ Flask-Ask
 Easy Alexa Skills Kit integration for Flask
 """
 from setuptools import setup
-from pip.req import parse_requirements
+from pip._internal.req import parse_requirements
 
 setup(
     name='Flask-Ask',
